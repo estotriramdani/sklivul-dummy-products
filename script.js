@@ -5,41 +5,11 @@ const LIKED_KEY = '5cc0bbd0078094e9d0d22fa2ddabe556';
 const contentWrapperElement = document.getElementById('contentWrapper');
 
 let currentLikes = [];
+const allProducts = [];
 
-const getAllLikes = () => {
-  let localProducts = localStorage.getItem(LIKED_KEY);
-
-  if (!localProducts) {
-    localStorage.setItem(LIKED_KEY, '[]');
-    localProducts = localStorage.getItem(LIKED_KEY);
-  }
-
-  const likedProducts = JSON.parse(localProducts);
-  currentLikes = likedProducts;
-};
-
-getAllLikes();
-
-const handleLike = (obj) => {
-  let localProducts = localStorage.getItem(LIKED_KEY);
-
-  if (!localProducts) {
-    localStorage.setItem(LIKED_KEY, '[]');
-    localProducts = localStorage.getItem(LIKED_KEY);
-  }
-
-  const likedProducts = JSON.parse(localProducts);
-
-  const isExist = likedProducts.find((product) => product.id === obj.id);
-
-  if (isExist) {
-    alert('Produk sudah disukai. Silakan cek laman favorit.');
-    return;
-  }
-
-  likedProducts.push(obj);
-
-  localStorage.setItem(LIKED_KEY, JSON.stringify(likedProducts));
+const buttonText = {
+  unlike: '<i class="bi bi-heart-fill"></i> Unlike',
+  like: '<i class="bi bi-heart"></i> Like',
 };
 
 const generateProductCard = (obj, isLiked) => {
@@ -65,13 +35,77 @@ const generateProductCard = (obj, isLiked) => {
       
     </div>
     <div class="card-footer bg-transparent">
-      <button class="${classButton}" onclick="handleLike(${JSON.stringify(obj).replace(
+      <button class="${classButton}" id="button-like-${
+    obj.id
+  }" onclick="handleLike(${JSON.stringify(obj).replace(
     /\"/g,
     "'"
   )})">${iconButton} ${textButton}</button>
     </div>
   </div>
 </div>`;
+};
+
+const renderContent = (products) => {
+  let contentHtml = '';
+  for (let i = 0; i < products.length; i++) {
+    const element = products[i];
+    const isLiked = currentLikes.findIndex((like) => like.id === element.id);
+    const contentCard = generateProductCard(element, isLiked !== -1);
+    contentHtml = contentHtml + contentCard;
+    allProducts.push(element);
+  }
+  contentWrapperElement.innerHTML = contentHtml;
+};
+
+const getAllLikes = () => {
+  let localProducts = localStorage.getItem(LIKED_KEY);
+
+  if (!localProducts) {
+    localStorage.setItem(LIKED_KEY, '[]');
+    localProducts = localStorage.getItem(LIKED_KEY);
+  }
+
+  const likedProducts = JSON.parse(localProducts);
+  currentLikes = likedProducts;
+};
+
+getAllLikes();
+
+const handleLike = (obj) => {
+  let localProducts = localStorage.getItem(LIKED_KEY);
+
+  let isLiking = false;
+
+  if (!localProducts) {
+    localStorage.setItem(LIKED_KEY, '[]');
+    localProducts = localStorage.getItem(LIKED_KEY);
+  }
+
+  const likedProducts = JSON.parse(localProducts);
+
+  const isExist = likedProducts.find((product) => product.id === obj.id);
+
+  if (isExist) {
+    const filtered = likedProducts.filter((product) => product.id !== obj.id);
+    localStorage.setItem(LIKED_KEY, JSON.stringify(filtered));
+  } else {
+    likedProducts.push(obj);
+    isLiking = true;
+    localStorage.setItem(LIKED_KEY, JSON.stringify(likedProducts));
+  }
+
+  const buttonElement = document.getElementById(`button-like-${obj.id}`);
+
+  if (isLiking) {
+    buttonElement.classList.remove('btn-outline-primary');
+    buttonElement.classList.add('btn-primary');
+    buttonElement.innerHTML = buttonText.unlike;
+  } else {
+    buttonElement.classList.remove('btn-primary');
+    buttonElement.classList.add('btn-outline-primary');
+    buttonElement.innerHTML = buttonText.like;
+  }
 };
 
 const generateSkeleton = `<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
@@ -96,25 +130,12 @@ const generateSkeleton = `<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
 
 contentWrapperElement.innerHTML = generateSkeleton.repeat(9);
 
-/* 
-1. Buat variable `let contentHtml = ''` untuk menampung semua element yg berupa string;
-2. Looping response, kemudian timpa `contentHtml` dengan concatenation dari fungsi generateProductCard
-3. setInnerHTML contentWrapperElement `contentHtml`
-*/
-
 fetch(URL_PRODUCTS)
   .then((response) => {
     return response.json();
   })
   .then((response) => {
-    let contentHtml = '';
-    for (let i = 0; i < response.length; i++) {
-      const element = response[i];
-      const isLiked = currentLikes.findIndex((like) => like.id === element.id);
-      const contentCard = generateProductCard(element, isLiked !== -1);
-      contentHtml = contentHtml + contentCard;
-    }
-    contentWrapperElement.innerHTML = contentHtml;
+    renderContent(response);
   })
   .catch((error) => {
     console.error(error);
