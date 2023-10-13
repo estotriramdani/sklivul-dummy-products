@@ -13,6 +13,14 @@ const checkAuth = () => {
 
 checkAuth()
 
+const logoutButtonElement = document.getElementById('logoutButton')
+
+logoutButtonElement.addEventListener('click', (event) => {
+  event.preventDefault();
+  localStorage.removeItem(AUTH_KEY);
+  window.location.replace('login.html')
+})
+
 const LIKED_KEY = '5cc0bbd0078094e9d0d22fa2ddabe556';
 
 const contentWrapperElement = document.getElementById('contentWrapper');
