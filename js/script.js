@@ -1,5 +1,18 @@
 const URL_PRODUCTS = 'https://6527e890931d71583df19400.mockapi.io/api/products';
 
+const AUTH_KEY = 'c5aed7e7f609d2370861f380eccb94e6';
+
+const checkAuth = () => {
+  const authKey =localStorage.getItem(AUTH_KEY);
+
+  if (!authKey) {
+    window.location.replace('login.html')
+  }
+
+};
+
+checkAuth()
+
 const LIKED_KEY = '5cc0bbd0078094e9d0d22fa2ddabe556';
 
 const contentWrapperElement = document.getElementById('contentWrapper');
