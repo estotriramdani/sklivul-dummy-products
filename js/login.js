@@ -2,17 +2,6 @@ const AUTH_KEY = 'c5aed7e7f609d2370861f380eccb94e6';
 
 const API_URL = 'https://6527e890931d71583df19400.mockapi.io/api/users';
 
-const checkAuth = () => {
-  const authKey = localStorage.getItem(AUTH_KEY);
-
-  if (authKey) {
-    window.location.replace('index.html')
-  }
-
-};
-
-checkAuth()
-
 const loginFormElement = document.getElementById('loginForm');
 const emailInputElement = document.getElementById('emailInput');
 const passwordInputElement = document.getElementById('passwordInput');
