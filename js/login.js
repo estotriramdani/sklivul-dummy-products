@@ -45,7 +45,7 @@ loginFormElement.addEventListener('submit', (event) => {
         2.b. valid => lanjut ke tahap berikutnya
       3. Masukkan produknya ke database
 
-      ? Karena skrg tidak ada token, maka kita simpan semua responnya ke localStorage/web storage
+      ? Karena skrg tidak ada token di mockAPI, maka kita simpan semua responnya ke localStorage/web storage
       */
 
       const stringify = JSON.stringify(response);
